@@ -1,0 +1,6 @@
+void setup(){}
+void loop(){neopixelWrite(0,
+	(sin(millis()/1000.    )*.5+.5)*16.,
+	(sin(millis()/1000.+2.1)*.5+.5)*16.,
+	(sin(millis()/1000.+4.2)*.5+.5)*16.
+);delay(1);}
