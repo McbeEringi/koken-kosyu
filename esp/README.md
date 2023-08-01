@@ -59,23 +59,24 @@
 	- ESP32-C3
 	- ESP32-S3
 	
-|8266|無印|C3|S3
----|---|---|---|---
-モジュール名称|ESP-WROOM-02|ESP32-WROOM-32E|ESP32-C3-WROOM-02|ESP32-S3-WROOM-1
-サイズmm|18x20x3|18x25.5x3.1|18×20×3.2|18x25.5x3.1
-コア数|1|2|1|2
-CPU|L106|Xtensa LX6|RISC-V|Xtensa LX7
-周波数MHz|160|160|160|160
-ビット数|32|32|32|32
-フラッシュ容量|2,4|4,8,16|4|4,8,16
-PWMチャネル数|8|8|6|8
-USB CDC|x|x|o|o
-USB OTG|x|x|x|o
-WiFi|o|o|o|o
-Bluetooth Classic|x|o|x|x
-Bluetooth Low Energy|x|o|o|o
-Ethernet|x|o|x|x
-秋月プライス¥|360|480|310|530
+||8266|無印|C3|S3|
+|---|---|---|---|---|
+|モジュール名称|ESP-WROOM-02|ESP32-WROOM-32E|ESP32-C3-WROOM-02|ESP32-S3-WROOM-1|
+|サイズmm|18x20x3|18x25.5x3.1|18×20×3.2|18x25.5x3.1|
+|コア数|1|2|1|2|
+|CPU|L106|Xtensa LX6|RISC-V|Xtensa LX7|
+|周波数MHz|160|160|160|160|
+|ビット数|32|32|32|32|
+|フラッシュ容量|2,4|4,8,16|4|4,8,16|
+|PWMチャネル数|8|8|6|8|
+|USB CDC|x|x|o|o|
+|USB OTG|x|x|x|o|
+|WiFi|o|o|o|o|
+|Bluetooth Classic|x|o|x|x|
+|Bluetooth Low Energy|x|o|o|o|
+|Ethernet|x|o|x|x|
+|秋月プライス¥|360|480|310|530|
+
 
 ### 注意事項
 - 電源もIOも3.3V
