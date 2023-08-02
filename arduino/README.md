@@ -94,7 +94,9 @@ void loop(){// setupの後無限に繰り返し動く
 追加の回路無し
 ```
 ```cpp
-void setup(){}
+void setup(){
+	Serial.begin();// 通信を開く
+}
 void loop(){// setupの後無限に繰り返し動く
 	Serial.print(millis());// millis()で起動後ミリ病を取得 送信
 	Serial.print("Hello World!\n");// 文字列を送信
