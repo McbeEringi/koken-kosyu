@@ -228,14 +228,14 @@ GND>--|GND                |
 - いくつかの導入方法がある
 	- 拡張機能としてのPlatformIO
 		- vscodeとかatomの拡張機能として導入
-	- CLIツールとしてのPlatformio
+	- CLIツールとしてのPlatformIO
 		- Pythonのパッケージとして公開されている
 		- PlatformIO Coreの名称で区別される
 	- 単体のGUIアプリとしては存在しない
 - メリット
 	- ArduinoIDEの上位互換
 	- 使い慣れたエディタの恩恵を受けられる
-	- ArduinoIDEより機動が早い
+	- ArduinoIDEより起動が早い
 	- ライブラリの依存関係を深く考えないでいい
 	- Arduino以外の環境での開発もできる
 - デメリット

@@ -225,3 +225,8 @@ void loop(){// setupの後無限に繰り返し動く
 	- UNOは名乗れるので大多数はこれ
 
 配線図だよ
+
+## Arduinoって結局何?
+- Arduino UNOに乗っているのはAVRマイコン
+- ESP32もRPI-PicoもArduinoとして開発できる
+- ArduinoはArduinoIDEとそれを使って開発できるボードを含めた大きな概念かも?
