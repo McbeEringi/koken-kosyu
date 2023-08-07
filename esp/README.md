@@ -11,8 +11,13 @@
 	- C3版
 	- 無印版
 - PlatformIO?
-
-- WebSocket?
+	- 概要
+	- 導入
+- Hello World!
+	- LEDで
+	- Serialで
+	- HTTPで
+- WebSocketコントローラ
 
 ## 今回の基板について
 - 部品
@@ -240,9 +245,214 @@ GND>--|GND                |
 	- CLIの方はデメリット無いと思っている
 ### 導入
 - 今回はCLIの方を入れていく
-- 公式がインストールスクリプトを用意してくれている
+- [公式のチュートリアル](https://docs.platformio.org/en/stable/core/installation/methods/installer-script.html#installer-script-recommended)に従って進める
+	- [インストールスクリプト](https://github.com/platformio/platformio-core-installer/blob/develop/get-platformio.py)をダウンロード
+	- 適当なディレクトリでこれを実行(`python get-platformio.py`)
+	- ユーザーのところに`.platformio`フォルダができる
+	- [環境変数を`.platformio/penv/bin`に通す](https://docs.platformio.org/en/stable/core/installation/shell-commands.html)
+	- ターミナルで`pio`コマンドが動けばok
 
+## Hello World!
+### LEDで
+- Lチカ
+- 適当なフォルダを作って以下の通り二つのファイルを用意する
+	```
+	hoge
+		platformio.ini
+		src
+			main.cpp
+	```
+- platformioに設定を書く
+	- [リファレンス](https://docs.platformio.org/en/stable/projectconf/index.html)
+	- C3無印両対応の設定ファイル
+		```ini
+		[platformio]
+		name=hoge
+		description=hogehoge
+		default_envs=c3 ;無印の人はここをmujiにしておく
 
+		[env]
+		platform=espressif32
+		framework=arduino
+		targets=upload ;これ書いとくと-t upload要らないので楽
+
+		[env:c3]
+		board=esp32-c3-devkitc-02
+
+		[env:muji]
+		board=esp32dev
+		```
+- main.cppにコードを書く
+	- NeoPixel(RGB LED)を虹色に光らせるサンプル
+		```cpp
+		void setup(){}
+		void loop(){neopixelWrite(0,
+			(sin(millis()/1000.    )*.5+.5)*16.,
+			(sin(millis()/1000.+2.1)*.5+.5)*16.,
+			(sin(millis()/1000.+4.2)*.5+.5)*16.
+		);delay(1);}
+		```
+		- フル出力だと眩しい
+- ターミナルからコマンドを叩いて書き込む
+	- まず開発ボードをpcに差す
+	- `platformio.ini`のディレクトリで`pio run`
+		- .iniを書き換えなくても`-e`オプションからenvを変更できる
+		- 本当は`pio run -t upload`と書かないとアップロードはされないが今回は.iniに書いてあるので省略
+
+### Serialで
+- .iniの`[env:c3]`に書き足す
+	```ini
+	build_flags= ;USBシリアル有効化
+		-D ARDUINO_USB_MODE=1
+		-D ARDUINO_USB_CDC_ON_BOOT=1
+	```
+- main.cppを以下に差し替え
+	- シリアルモニタに`Hello World! ミリ秒`を吐くサンプル
+		```cpp
+		void setup(){Serial.begin();}
+		void loop(){Serial.printf("Hello World! %u\n",millis());delay(100);}
+		```
+- 書き込む
+- シリアルモニタを見る
+	- `pio device monitor`
+
+### HTTPで
+
+- の前に
+	- LittleFS
+		- ESPのフラッシュを間借りしてファイルシステムを作れる
+		- ディレクトリ構造を持てる
+		- プログラム本体とは別で管理できる
+	- SmartConfig
+		- スマホからESPの接続先WiFiを指定できる
+		- 無料の専用のアプリを使う
+			- Esptouch
+- .iniの`[env]`に書き足す
+	```ini
+	board_build.filesystem=littlefs ;ファイルシステムにlittlefsを使用
+	lib_deps= ;使うライブラリをgithubから取得
+		https://github.com/dvarrel/AsyncTCP.git
+		https://github.com/dvarrel/ESPAsyncWebSrv.git
+	```
+- ファイルシステムに書き込むファイルを用意
+	- .iniのある階層に`data`フォルダを作る
+	- `data/index.html`を作って適当にHTMLを書く
+- ファイルイメージをビルドして書き込む
+	- `pio run -t uploadfs`
+- main.cppを以下に差し替え
+	- littlefsを使ったサーバーを立てるサンプル
+		```cpp
+		#include <LittleFS.h>
+		#include <ESPAsyncWebSrv.h>
+		#define PIN 0
+
+		AsyncWebServer svr(80);
+
+		void setup(){
+			Serial.begin();LittleFS.begin();neopixelWrite(PIN,16,0,0);
+			delay(1000);
+			WiFi.begin();Serial.printf("WiFi");neopixelWrite(PIN,16,16,0);
+			for(uint8_t i=0;WiFi.status()!=WL_CONNECTED;i++){
+				if(i>20){
+					Serial.printf("\nWiFi not found.\n\nSmartConfig started.\n");neopixelWrite(PIN,16,0,16);
+					WiFi.beginSmartConfig();while(!WiFi.smartConfigDone());Serial.printf("SmartConfig success!\n");
+				}
+				Serial.printf(".");delay(500);
+			}
+			neopixelWrite(PIN,0,16,0);
+			svr.onNotFound([](AsyncWebServerRequest *request){request->redirect("/");});
+			svr.serveStatic("/",LittleFS,"/").setDefaultFile("index.html");
+			svr.begin();
+		}
+		void loop(){
+			Serial.printf("SSID: %s  IP: %s\n",WiFi.SSID().c_str(),WiFi.localIP().toString().c_str());
+			delay(2000);
+		}
+		```
+- 書き込む
+- シリアルモニタを見る
+	- SmartConfig startedが出たらEsptouchで設定
+	- 同じWiFiに接続した機器のブラウザにIPを打ち込む
+
+## WebSocketコントローラ
+- WiFiを使ってスマホと高速双方向通信
+- ロボットのコントローラーに便利
+- の前に
+	- WebSocket
+		- [MDNのリファレンス](https://developer.mozilla.org/ja/docs/Web/API/WebSockets_API)
+		- サーバーとクライアントで双方向に通信できる
+		- テキスト送信とバイナリ送信の2つのモードがある
+	- JavaScript
+		```js
+		// HTMLの<script><script/>の中に書く
+
+		// 変数
+		let x=1; // 宣言
+		x="hello"; // 変数に型が紐づけられていない
+		const one=1; // こっちは定数
+
+		// 関数(Funcion)
+		const fn=(a,b,c)=>{return a+b+c}; // 変数と同等に扱うことができる
+		fn(1,2,3)==6;
+		isNaN(fn(1,2))==true; // 呼び出し時の引数が不足、超過していても実行される
+
+		// 配列(Array)
+		const arr=[1,3,4,8];
+		arr[1]=2; // constでも中身は変更可能
+
+		// オブジェクト(Object)
+		const obj={a:1,b:"bb",c:x=>x+x};
+		obj.a=0; // constでも中身は変更可能
+		obj.c();
+
+		// クラス
+		const cls=class{
+			constructor(){}
+			a(){return 1;}
+		};
+		new cls().a()==1;
+
+		// 既存のクラスの呼び出しと設定
+		const ws=new WebSocket();
+		ws.binaryType='arraybuffer'; // バイナリを受信したらArrayBufferに変換
+		ws.onopen=e=>{ // イベント駆動 引数にオブジェクトが渡される 返値は無視される
+			console.log(e); // 標準のログ
+		};
+		ws.onclose=e=>console.log(e);
+		ws.onmessage=e=>console.log(e.data); // 受信データを吐く ここにStringかArrayBufferが入っている
+
+		// 型付き配列(TypedArray)とArrayBuffer jsでバイナリ列を扱う
+		/*
+		jsは仮想マシンで動く
+		仮想マシン --- Array --- 人間
+
+		WebGLの登場で直接バイナリ列を扱う仕組みが必要になり策定された
+		メモリ --- ArrayBuffer ---TypedArray --- 人間
+													\--DataView --- 人間
+		ArrayBufferは直接操作できない
+		TypedArrayかDataViewを介して操作する
+		*/
+		const
+			ab=new ArrayBuffer(4), // 4byteのメモリを確保
+
+			u8=new Uint8Array(ab), // 確保したメモリを符号なし8bit整数の配列として見る配列
+			f32=new Float32Array(ab); // 同じメモリを32bit浮動小数点数として見る配列
+			//これらの総称がTypedArray
+		u8[0]=1; // 確保したメモリをUint8Array経由で操作
+		f32[0]; // 確保したメモリをFloat32Array経由で読取
+
+		new Uint8Array(arr); // 普通の配列から変換と同時にメモリ確保
+		// メモリの開放はその参照がいかなる定数変数にも格納されていない状態になったときに自動的に行われる
+
+		ws.send(new Uint8Array(arr));// websocketで送信 send関数はTypedArrayなどのバイナリデータを持つ型とStringのみを受け付ける
+		```
+- ファイルを編集
+	- main.cpp `samples/websocket/src/main.cpp`
+	- index.html `samples/websocket/data/index.html`
+- ファイルシステムの書き込み
+- プログラムの書き込み
+- EsptouchでWiFiに接続
+- シリアルモニタのIPを見て接続
 # おまけ
 ## NeoPixel?
 参考になりそう: https://ht-deko.com/arduino/neopixel.html
