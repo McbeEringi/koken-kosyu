@@ -1,3 +1,4 @@
+#include <Arduino.h>
 void setup(){}
 void loop(){neopixelWrite(0,
 	(sin(millis()/1000.    )*.5+.5)*16.,

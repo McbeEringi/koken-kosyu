@@ -1,5 +1,7 @@
 # ESP
 
+無線を使用するため複数人が同時に作業すると上手くいかない恐れあり
+
 ## 目次
 
 - 今回の基板について
@@ -381,6 +383,8 @@ GND>--|GND                |
   - NeoPixel(RGB LED)を虹色に光らせるサンプル
 
   ```cpp
+  #include <Arduino.h>
+
   void setup(){}
   void loop(){neopixelWrite(0,
    (sin(millis()/1000.    )*.5+.5)*16.,// フル出力だと眩しい
@@ -409,7 +413,9 @@ GND>--|GND                |
   - シリアルモニタに`Hello World! ミリ秒`を吐くサンプル
   
   ```cpp
-  void setup(){Serial.begin();}
+  #include <Arduino.h>
+
+  void setup(){Serial.begin(9600);}
   void loop(){Serial.printf("Hello World! %u\n",millis());delay(100);}
   ```
 

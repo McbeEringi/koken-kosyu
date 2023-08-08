@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <LittleFS.h>
 #include <ESPAsyncWebSrv.h>
 #define PIN 0
@@ -5,7 +6,7 @@
 AsyncWebServer svr(80);
 
 void setup(){
-	Serial.begin();LittleFS.begin();neopixelWrite(PIN,16,0,0);
+	Serial.begin(9600);LittleFS.begin();neopixelWrite(PIN,16,0,0);
 	delay(1000);
 	WiFi.begin();Serial.printf("WiFi");neopixelWrite(PIN,16,16,0);
 	for(uint8_t i=0;WiFi.status()!=WL_CONNECTED;i++){
