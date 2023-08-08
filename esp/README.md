@@ -94,6 +94,7 @@
 |---|---|---|---|---|
 |モジュール名称|ESP-WROOM-02D|ESP32-WROOM-32E|ESP32-C3-WROOM-02|ESP32-S3-WROOM-1|
 |サイズmm|18x20x3|18x25.5x3.1|18×20×3.2|18x25.5x3.1|
+|ピン間隔mm|1.5|1.27|1.5|1.27|
 |コア数|1|2|1|2|
 |CPUアーキテクチャ|L106 (?)|Xtensa LX6|RISC-V|Xtensa LX7|
 |フラッシュ容量MB|2, 4|4, 8, 16|4|4, 8, 16|
@@ -107,6 +108,8 @@
 |秋月プライス|¥360 (2MB)|¥480 (16MB)|¥310|¥530 (16MB)|
 
 - C3はバランスが良くて小さくて安い
+- 1.5mmピッチの変換基板はそうそう売ってない
+- 8266とc3はピン互換ではない
 - 無印とC3を用途に応じて使い分けるのがベスト
   - 一つでも当てはまれば無印行き
     - PWMが8ch欲しい
@@ -445,38 +448,9 @@ GND>--|GND                |
   - `data/index.html`を作って適当にHTMLを書く
 - ファイルイメージをビルドして書き込む
   - `pio run -t uploadfs`
-- main.cppを以下に差し替え
-  - littlefsを使ったサーバーを立てるサンプル
-
-    ```cpp
-    #include <LittleFS.h>
-    #include <ESPAsyncWebSrv.h>
-    #define PIN 0
-
-    AsyncWebServer svr(80);
-
-    void setup(){
-    Serial.begin();LittleFS.begin();neopixelWrite(PIN,16,0,0);
-    delay(1000);
-    WiFi.begin();Serial.printf("WiFi");neopixelWrite(PIN,16,16,0);
-    for(uint8_t i=0;WiFi.status()!=WL_CONNECTED;i++){
-      if(i>20){
-      Serial.printf("\nWiFi not found.\n\nSmartConfig started.\n");neopixelWrite(PIN,16,0,16);
-      WiFi.beginSmartConfig();while(!WiFi.smartConfigDone());Serial.printf("SmartConfig success!\n");
-      }
-      Serial.printf(".");delay(500);
-    }
-    neopixelWrite(PIN,0,16,0);
-    svr.onNotFound([](AsyncWebServerRequest *request){request->redirect("/");});
-    svr.serveStatic("/",LittleFS,"/").setDefaultFile("index.html");
-    svr.begin();
-    }
-    void loop(){
-    Serial.printf("SSID: %s  IP: %s\n",WiFi.SSID().c_str(),WiFi.localIP().toString().c_str());
-    delay(2000);
-    }
-    ```
-
+- main.cppを編集
+  - LittleFSのサーバーを立てるサンプル
+  - main.cpp `samples/server/src/main.cpp`
 - 書き込む
 - シリアルモニタを見る
   - SmartConfig startedが出たらEsptouchで設定
@@ -558,6 +532,7 @@ GND>--|GND                |
     ```
 
 - ファイルを編集
+  - LittleFSのサーバーとwebsocketのサーバーを立てるサンプル
   - main.cpp `samples/websocket/src/main.cpp`
   - index.html `samples/websocket/data/index.html`
 - ファイルシステムの書き込み
