@@ -338,7 +338,7 @@ GND>--|GND                |
   - [インストールスクリプト](https://github.com/platformio/platformio-core-installer/blob/develop/get-platformio.py)をダウンロード
   - 適当なディレクトリでこれを実行(`python get-platformio.py`)
   - ユーザーのところに`.platformio`フォルダができる
-  - [環境変数を`.platformio/penv/bin`に通す](https://docs.platformio.org/en/stable/core/installation/shell-commands.html)
+  - [環境変数を`.platformio/penv/Scripts`に通す](https://docs.platformio.org/en/stable/core/installation/shell-commands.html)
   - ターミナルで`pio`コマンドが動けばok
 
 ## Hello World
@@ -497,7 +497,7 @@ GND>--|GND                |
     new cls().a()==1;
 
     // 既存のクラスの呼び出しと設定
-    const ws=new WebSocket();
+    const ws=new WebSocket('ws://192.168.0.135/ws');
     ws.binaryType='arraybuffer'; // バイナリを受信したらArrayBufferに変換
     ws.onopen=e=>{ // イベント駆動 引数にオブジェクトが渡される 返値は無視される
     console.log(e); // 標準のログ
