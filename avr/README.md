@@ -193,6 +193,7 @@
 
 - AVR用のGNU C言語コンパイラ
 - 中身はAVR Libcとして開発
+  - brewのlibcは古くてt202に対応していない?
 - <https://www.nongnu.org/avr-libc/user-manual/>
 - オプションで指定
   - AVRの型番
