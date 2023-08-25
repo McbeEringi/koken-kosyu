@@ -440,6 +440,13 @@ GND>--|GND                |
         - EsptouchからSmartConfigを選択
         - パスワードを入れてconfirm
         - ESPがWiFi接続に成功すると表示が出る
+  - mDNS
+    - multicast DNS
+    - 名前解決の仕組み
+      - IP直打ちしないで良い
+      - 末尾に.localのついた名前を付けられる
+    - 普通のDNSはそれ用のサーバーが名前の辞書を持っているがmDNSはクライアントに名前を聞きに行く
+    - Windowsで設定しないと名前解決できない場合がある <https://teratail.com/questions/362493>
 - .iniの`[env]`に書き足す
   
   ```ini
@@ -460,7 +467,7 @@ GND>--|GND                |
 - 書き込む
 - シリアルモニタを見る
   - SmartConfig startedが出たらEsptouchで設定
-  - 同じWiFiに接続した機器のブラウザにIPを打ち込む
+  - 同じWiFiに接続した機器のブラウザにNAME.localもしくはIPを打ち込む
 
 ## WebSocketコントローラ
 
@@ -544,4 +551,4 @@ GND>--|GND                |
 - ファイルシステムの書き込み
 - プログラムの書き込み
 - EsptouchでWiFiに接続
-- シリアルモニタのIPを見て接続
+- NAME.local又はシリアルモニタのIPを見て接続

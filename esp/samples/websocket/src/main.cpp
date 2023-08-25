@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include <LittleFS.h>
 #include <ESPAsyncWebSrv.h>
+#include <ESPmDNS.h>
 #define PIN 0
+#define NAME "mysvr"
 
 AsyncWebServer svr(80);
 AsyncWebSocket ws("/ws");
@@ -30,6 +32,7 @@ void setup(){
 		Serial.printf(".");delay(500);
 	}
 	neopixelWrite(PIN,0,16,0);
+	MDNS.begin(NAME);
 	ws.onEvent(onWS);svr.addHandler(&ws);
 	svr.onNotFound([](AsyncWebServerRequest *request){request->redirect("/");});
 	svr.serveStatic("/",LittleFS,"/").setDefaultFile("index.html");
