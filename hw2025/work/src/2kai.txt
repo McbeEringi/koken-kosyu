@@ -1,0 +1,15 @@
+#include <Arduino.h>
+
+// void nn(int8_t n){
+// 	tone(10,440*(pow(2,n/12.+1)),100);
+// }
+
+void setup(){}
+void loop(){
+	// nn(3);nn(5);nn(10);
+	// neopixelWrite(8,16,16,16);
+	// delay(1000);
+	// nn(10);nn(5);nn(3);
+	// neopixelWrite(8,0,0,0);
+	// delay(1000);
+}
